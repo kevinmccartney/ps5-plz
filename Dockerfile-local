@@ -3,13 +3,14 @@ FROM ubuntu:focal
 
 ENV APP_DIR /var/task
 ENV PS5_PLZ_ENV LOCAL
-WORKDIR $APP_DIR
 ENV PATH /var/task/bin:$PATH
 ENV PYTHONPATH /var/task/src:/var/task/lib
 
-# Copy deps from the repo
-COPY /bin ./bin
+WORKDIR $APP_DIR
+
 COPY requirements.txt .
+RUN ls -la
+RUN mkdir lib
 
 RUN apt-get update
 
@@ -29,4 +30,4 @@ RUN apt-get install -y libglib2.0-0 \
     libfontconfig1 \
     libx11-dev
 # install python deps
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements.txt -t lib

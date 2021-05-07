@@ -1,0 +1,30 @@
+# https://docs.aws.amazon.com/lambda/latest/dg/images-create.html
+FROM python:buster as build-image
+
+ENV APP_DIR /var/task
+ENV PATH /var/task:$PATH
+ENV PYTHONPATH /var/task/src:/var/task/lib
+
+RUN mkdir -p $APP_DIR
+WORKDIR $APP_DIR
+RUN mkdir lib
+
+# Install aws-lambda-cpp build dependencies
+RUN apt-get update && \
+  apt-get install -y \
+  g++ \
+  make \
+  cmake \
+  unzip \
+  libcurl4-openssl-dev
+
+# Copy function code
+COPY src/* .
+COPY requirements.txt .
+COPY entry_script.sh .
+
+# Install the runtime interface client
+RUN pip install -r requirements.txt -t lib
+
+# ENTRYPOINT ["/var/task/entry_script.sh"]
+# CMD ["purchase.lambda_handler"]

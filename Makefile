@@ -29,21 +29,21 @@ fetch-dependencies:		## download chromedriver, headless-chrome to `./bin/`
 	# Clean
 	@rm headless-chromium.zip chromedriver.zip
 
-docker-build:		## create Docker image
-	docker build -t ps5-plz:latest .
+compose-build:
+	docker-compose build
 
-docker-run:			## run `src.lambda_function.lambda_handler` with docker-compose
-	docker run -it -p 5678:5678 -v $(PWD)/src:/var/task/src ps5-plz python3.8 src/purchase/lambda.py 
+local-run:
+	docker-compose run local python3.8 src/purchase/lambda.py
 
-docker-login:			## run `src.lambda_function.lambda_handler` with docker-compose
-	docker run -it -v $(PWD)/src:/var/task/src ps5-plz bash
+debug:
+	docker-compose run debug python3.8 src/purchase/lambda.py
 
 build-lambda-package: clean fetch-dependencies			## prepares zip archive for AWS Lambda deploy (-> build/build.zip)
 	mkdir build
-	cp -r src build/.
+	cp -r src/* build/.
 	cp -r bin build/.
-	cp -r lib build/.
 	pip install -r requirements.txt -t build/lib/.
-	cd build; zip -9qr build.zip .
-	cp build/build.zip .
+	chmod -R 777 build
+	cd build; zip -9qr latest.zip .
+	cp build/latest.zip .
 	rm -rf build

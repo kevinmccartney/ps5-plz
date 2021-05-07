@@ -14,11 +14,25 @@ data "terraform_remote_state" "state" {
 
 provider "aws" {
   version = "~> 3.37.0"
-  region = var.ps5_plz_aws_region
+  region  = var.ps5_plz_aws_region
 }
 
 resource "aws_s3_bucket" "terraform_state" {
   bucket = "ps5-plz-infra-state"
+  versioning {
+    enabled = true
+  }
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
+
+resource "aws_s3_bucket" "ps5-plz-dist" {
+  bucket = "ps5-plz-dist"
   versioning {
     enabled = true
   }
@@ -61,33 +75,43 @@ resource "aws_iam_role" "purchase_lambda" {
 EOF
 
   tags = {
-    "project" = "ps5-plz",
+    "project"    = "ps5-plz",
     "managed_by" = "terraform"
   }
 }
 
 resource "aws_lambda_function" "test_lambda" {
-  filename = "../dist/ps5-plz-purchase.zip"
+  image_uri = "291118487001.dkr.ecr.us-east-1.amazonaws.com/ps5-plz:latest"
   function_name = "ps5_plz_purchase"
   role          = aws_iam_role.purchase_lambda.arn
   handler       = "purchase.lambda_handler"
-
-  # The filebase64sha256() function is available in Terraform 0.11.12 and later
-  # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
-  source_code_hash = filebase64sha256("../dist/ps5-plz-purchase.zip")
+  package_type = "Image"
 
   runtime = "python3.8"
 
   tags = {
-    "project" = "ps5-plz",
+    "project"    = "ps5-plz",
     "managed_by" = "terraform"
   }
 
   environment {
     variables = {
-      "PATH" = "var/task/bin"
+      "PATH"       = "var/task/bin"
       "PYTHONPATH" = "/var/task/src:/var/task/lib"
     }
-    
+
+  }
+}
+
+resource "aws_ecr_repository" "image-repository" {
+  name = "ps5-plz"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  tags = {
+    "project"    = "ps5-plz",
+    "managed_by" = "terraform"
   }
 }

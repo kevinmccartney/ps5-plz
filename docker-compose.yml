@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  # debug:
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile-local
+  #   # ports:
+  #   #   - "5678:5678"
+  #   volumes:
+  #     - ./src:/var/task/src
+  #     - ./bin:/var/task/bin
+  # local:
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile-local
+  #   volumes:
+  #     - ./src:/var/task/src
+  #     - ./bin:/var/task/bin
+  lambda:
+    build:
+      context: .
+      dockerfile: ./Dockerfile-lambda
+    volumes:
+      - ./src:/var/task/src
+      - ./bin:/var/task/bin
+    ports:
+      - "9000:8080"

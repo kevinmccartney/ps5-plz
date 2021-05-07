@@ -1,5 +1,3 @@
 debugpy==1.3.0
 selenium==3.141.0
-# TODO: replace this, it's really old
-# chromedriver_installer==0.0.6
-chromedriver-py==90.0.4430.24
+awslambdaric==1.0.0
