@@ -82,4 +82,12 @@ resource "aws_lambda_function" "test_lambda" {
     "project" = "ps5-plz",
     "managed_by" = "terraform"
   }
+
+  environment {
+    variables = {
+      "PATH" = "var/task/bin"
+      "PYTHONPATH" = "/var/task/src:/var/task/lib"
+    }
+    
+  }
 }
