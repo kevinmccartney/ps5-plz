@@ -8,3 +8,9 @@ This is an AWS Project to help you buy a PS5. It's written in Python & the infra
 * [Modern Web Automation With Python and Selenium](https://realpython.com/modern-web-automation-with-python-and-selenium/)
 * [Creating Lambda container images](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html)
 * [Testing Lambda container images locally](https://docs.aws.amazon.com/lambda/latest/dg/images-test.html)
+
+## Issues
+* `selenium.common.exceptions.WebDriverException: Message: unknown error: DevToolsActivePort file doesn't exist`
+  * `chrome_options.add_argument("--disable-dev-shm-usage")`
+  * `chrome_options.add_argument("--remote-debugging-port=0")`
+  

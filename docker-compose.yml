@@ -20,8 +20,8 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile-lambda
-    volumes:
-      - ./src:/var/task/src
-      - ./bin:/var/task/bin
+    # volumes:
+    #   - ./src:/var/task/src
+    #   - ./bin:/var/task/bin
     ports:
       - "9000:8080"

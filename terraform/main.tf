@@ -80,14 +80,18 @@ EOF
   }
 }
 
+resource "aws_iam_role_policy_attachment" "test-attach" {
+  role       = aws_iam_role.purchase_lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
 resource "aws_lambda_function" "test_lambda" {
   image_uri = "291118487001.dkr.ecr.us-east-1.amazonaws.com/ps5-plz:latest"
   function_name = "ps5_plz_purchase"
   role          = aws_iam_role.purchase_lambda.arn
-  handler       = "purchase.lambda_handler"
   package_type = "Image"
-
-  runtime = "python3.8"
+  memory_size = 512
+  timeout = 60
 
   tags = {
     "project"    = "ps5-plz",

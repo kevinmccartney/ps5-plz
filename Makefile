@@ -19,11 +19,13 @@ fetch-dependencies:		## download chromedriver, headless-chrome to `./bin/`
 	@mkdir -p bin/
 
 	# Get chromedriver
-	curl -SL https://chromedriver.storage.googleapis.com/91.0.4472.19/chromedriver_linux64.zip > chromedriver.zip
+	# TODO: update headless chrome version to work with 91.* version of chrome driver
+	curl -SL https://chromedriver.storage.googleapis.com/86.0.4240.22/chromedriver_linux64.zip > chromedriver.zip
 	unzip chromedriver.zip -d bin/
 
 	# Get Headless-chrome
 	curl -SL https://github.com/adieuadieu/serverless-chrome/releases/download/v1.0.0-57/stable-headless-chromium-amazonlinux-2.zip > headless-chromium.zip
+
 	unzip headless-chromium.zip -d bin/
 
 	# Clean
@@ -32,18 +34,12 @@ fetch-dependencies:		## download chromedriver, headless-chrome to `./bin/`
 compose-build:
 	docker-compose build
 
+publish-image:
+	docker tag ps5-plz_lambda:latest 291118487001.dkr.ecr.us-east-1.amazonaws.com/ps5-plz:latest
+	docker push 291118487001.dkr.ecr.us-east-1.amazonaws.com/ps5-plz:latest
+
 local-run:
 	docker-compose run local python3.8 src/purchase/lambda.py
 
 debug:
 	docker-compose run debug python3.8 src/purchase/lambda.py
-
-build-lambda-package: clean fetch-dependencies			## prepares zip archive for AWS Lambda deploy (-> build/build.zip)
-	mkdir build
-	cp -r src/* build/.
-	cp -r bin build/.
-	pip install -r requirements.txt -t build/lib/.
-	chmod -R 777 build
-	cd build; zip -9qr latest.zip .
-	cp build/latest.zip .
-	rm -rf build
