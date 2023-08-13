@@ -93,6 +93,11 @@ resource "aws_lambda_function" "test_lambda" {
   memory_size = 512
   timeout = 60
 
+  image_config {
+    entry_point = ["/var/task/entry_script.sh"]
+    command = ["purchase.lambda_handler"]
+  }
+
   tags = {
     "project"    = "ps5-plz",
     "managed_by" = "terraform"

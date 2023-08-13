@@ -8,6 +8,7 @@ ENV PYTHONPATH /var/task/src:/var/task/lib
 RUN mkdir -p $APP_DIR
 WORKDIR $APP_DIR
 RUN mkdir lib
+RUN mkdir bin
 
 # Install aws-lambda-cpp build dependencies
 RUN apt-get update && \
@@ -20,11 +21,26 @@ RUN apt-get update && \
 
 # Copy function code
 COPY src/* .
-COPY bin ./bin
+# COPY bin ./bin
 COPY requirements.txt .
 COPY entry_script.sh .
 
 RUN apt-get update
+
+# TODO: update headless chrome version to work with 91.* version of chrome driver
+RUN curl -SL https://chromedriver.storage.googleapis.com/86.0.4240.22/chromedriver_linux64.zip > chromedriver.zip
+RUN	unzip chromedriver.zip -d bin/
+
+# Get Headless-chrome
+RUN	curl -SL https://github.com/adieuadieu/serverless-chrome/releases/download/v1.0.0-57/stable-headless-chromium-amazonlinux-2.zip > headless-chromium.zip
+RUN unzip headless-chromium.zip -d bin/
+
+RUN curl -SL https://github.com/aws/aws-lambda-runtime-interface-emulator/releases/latest/download/aws-lambda-rie > aws-lambda-rie
+RUN chmod +x aws-lambda-rie
+RUN cp aws-lambda-rie -d bin/
+
+# Clean
+RUN rm headless-chromium.zip chromedriver.zip
 
 # set the timezone
 # https://stackoverflow.com/a/44333806
@@ -58,5 +74,5 @@ RUN pip install -r requirements.txt -t lib
 RUN useradd -u 8877 docker-user
 USER docker-user
 
-ENTRYPOINT ["/var/task/entry_script.sh"]
-CMD ["purchase.lambda_handler"]
+# ENTRYPOINT ["/var/task/entry_script.sh"]
+# CMD ["purchase.lambda_handler"]
